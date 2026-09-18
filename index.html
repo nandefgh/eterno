@@ -83,7 +83,6 @@
     </footer>
 
     <script>
-        // Kredensial Supabase Anda
         const SUPABASE_URL = "https://zcjdgppodjtlwjnyrqdi.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjamRncHBvZGp0bHdqbnlycWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MTU4MTksImV4cCI6MjEwNTE5MTgxOX0.OdfgOI1kpCPSeIIydomfp0vb5MzkDhvyH2Pw9Z6YzeQ";
         
@@ -111,7 +110,6 @@
             container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#aaa; padding:2rem;">Memuat produk dari Supabase...</p>';
 
             try {
-                // Mengambil produk dan foto terkait dari Supabase
                 const { data: products, error } = await db
                     .from('products')
                     .select('*, product_images(image_url)')
