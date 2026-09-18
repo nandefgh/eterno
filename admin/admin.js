@@ -1,5 +1,15 @@
 // ==========================================
-// 1. AUTHENTICATION CHECK
+// 1. DEKLARASI VARIABEL UTAMA & KONFIGURASI
+// ==========================================
+const SUPABASE_URL = "https://zcjdgppodjtlwjnyrqdi.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjamRncHBvZGp0bHdqbnlycWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MTU4MTksImV4cCI6MjEwNTE5MTgxOX0.OdfgOI1kpCPSeIIydomfp0vb5MzkDhvyH2Pw9Z6YzeQ";
+
+// Deklarasi diawali di paling atas agar tidak error initialization
+let products = [];
+let db = null;
+
+// ==========================================
+// 2. AUTHENTICATION CHECK
 // ==========================================
 const ADMIN_PASSWORD = "eternoadmin123"; 
 let isLoggedIn = sessionStorage.getItem('eterno_admin_logged');
@@ -14,23 +24,28 @@ if (!isLoggedIn) {
     }
 }
 
-// ==========================================
-// 2. SUPABASE INITIALIZATION
-// ==========================================
-const SUPABASE_URL = "https://zcjdgppodjtlwjnyrqdi.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjamRncHBvZGp0bHdqbnlycWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MTU4MTksImV4cCI6MjEwNTE5MTgxOX0.OdfgOI1kpCPSeIIydomfp0vb5MzkDhvyH2Pw9Z6YzeQ";
-
-let db = null;
-let products = [];
-
+// Inisialisasi Supabase aman
 function initSupabase() {
     if (typeof supabase !== 'undefined') {
-        db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        if (!db) {
+            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
         return true;
     } else {
-        console.error("Supabase SDK belum terload!");
+        console.error("Supabase SDK belum siap!");
         return false;
     }
+}
+
+// Helper sinkronisasi input form ke array products
+function syncCurrentInputs() {
+    if (!Array.isArray(products)) return;
+    products.forEach((prod, pIdx) => {
+        const titleEl = document.getElementById(`title-${pIdx}`);
+        const priceEl = document.getElementById(`price-${pIdx}`);
+        if (titleEl) prod.title = titleEl.value;
+        if (priceEl) prod.price = priceEl.value;
+    });
 }
 
 // ==========================================
@@ -40,8 +55,8 @@ async function fetchProducts() {
     const container = document.getElementById('adminList');
     if (!container) return;
     
-    if (!db && !initSupabase()) {
-        container.innerHTML = '<p style="text-align:center; color:#ff5555; padding:2rem;">Gagal memuat Supabase SDK. Periksa koneksi internet / CDN di HTML.</p>';
+    if (!initSupabase()) {
+        container.innerHTML = '<p style="text-align:center; color:#ff5555; padding:2rem;">Gagal memuat Supabase SDK. Silakan refresh halaman.</p>';
         return;
     }
 
@@ -118,20 +133,11 @@ function renderAdminList() {
     });
 }
 
-function syncCurrentInputs() {
-    products.forEach((prod, pIdx) => {
-        const titleEl = document.getElementById(`title-${pIdx}`);
-        const priceEl = document.getElementById(`price-${pIdx}`);
-        if (titleEl) prod.title = titleEl.value;
-        if (priceEl) prod.price = priceEl.value;
-    });
-}
-
 // ==========================================
 // 5. TAMBAH PRODUK BARU (POST)
 // ==========================================
 async function addNewProduct() {
-    if (!db && !initSupabase()) return;
+    if (!initSupabase()) return;
     syncCurrentInputs();
 
     try {
@@ -163,7 +169,7 @@ async function addNewProduct() {
 // 6. SIMPAN PERUBAHAN DETAIL (UPDATE)
 // ==========================================
 async function saveChanges() {
-    if (!db && !initSupabase()) return;
+    if (!initSupabase()) return;
     syncCurrentInputs();
 
     if (products.length === 0) {
@@ -211,7 +217,7 @@ async function saveChanges() {
 // 7. HAPUS PRODUK DARI DATABASE (DELETE)
 // ==========================================
 async function deleteProductFromDB(productId, title) {
-    if (!db && !initSupabase()) return;
+    if (!initSupabase()) return;
     
     if (confirm(`Yakin ingin menghapus produk "${title}"?`)) {
         try {
