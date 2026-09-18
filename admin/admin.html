@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin — ETERNO</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="action-bar">
+            <a href="../index.html" class="back-link">&larr; Kembali ke Website</a>
+            <span class="logout-btn" onclick="logout()">Logout Admin</span>
+        </div>
+
+        <h1>Panel Kelola Produk</h1>
+
+        <div class="add-btn-wrapper">
+            <button class="btn-add" onclick="addNewProduct()">+ Tambah Produk Baru</button>
+        </div>
+        
+        <div id="adminList"></div>
+
+        <button class="btn-save" onclick="saveChanges()">Simpan Semua Perubahan</button>
+        <button class="btn-reset" onclick="resetData()">Reset/Hapus Semua Data Cache Browser</button>
+    </div>
+
+    <!-- External JS -->
+    <script src="admin.js"></script>
+</body>
+</html>

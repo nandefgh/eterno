@@ -1,0 +1,278 @@
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Poppins', sans-serif; 
+}
+
+body { 
+    background-color: #121212; 
+    color: #f4f4f4; 
+    line-height: 1.6; 
+}
+
+a { 
+    text-decoration: none; 
+    color: inherit; 
+}
+
+header { 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    background: rgba(18, 18, 18, 0.95); 
+    backdrop-filter: blur(5px); 
+    z-index: 1000; 
+    border-bottom: 1px solid #222; 
+}
+
+.nav-container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 1rem 2rem; 
+}
+
+.logo { 
+    font-size: 1.8rem; 
+    font-weight: 800; 
+    letter-spacing: 2px; 
+    color: #fff; 
+}
+
+.logo span { 
+    color: #888; 
+}
+
+.nav-links { 
+    display: flex; 
+    list-style: none; 
+    gap: 2rem; 
+}
+
+.nav-links a { 
+    font-size: 0.9rem; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    transition: color 0.3s; 
+}
+
+.nav-links a:hover { 
+    color: #aaa; 
+}
+
+.hero { 
+    height: 70vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('../foto/eterno.jpg') center/cover; 
+    padding: 0 1rem; 
+    margin-top: 60px; 
+}
+
+.hero-content h1 { 
+    font-size: 2.8rem; 
+    font-weight: 800; 
+    margin-bottom: 1rem; 
+    letter-spacing: 3px; 
+}
+
+.hero-content p { 
+    font-size: 1rem; 
+    color: #ccc; 
+    max-width: 600px; 
+    margin: 0 auto 2rem; 
+}
+
+section { 
+    padding: 5rem 2rem; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+}
+
+.section-title { 
+    text-align: center; 
+    margin-bottom: 3rem; 
+}
+
+.section-title h2 { 
+    font-size: 2rem; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+}
+
+.section-title p { 
+    color: #777; 
+    font-size: 0.9rem; 
+}
+
+.services-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    gap: 2rem; 
+    margin-bottom: 4rem; 
+}
+
+.service-card { 
+    background: #1a1a1a; 
+    padding: 2rem; 
+    border-radius: 8px; 
+    border: 1px solid #2a2a2a; 
+    text-align: center; 
+    transition: transform 0.3s; 
+}
+
+.service-card:hover { 
+    transform: translateY(-5px); 
+}
+
+.service-card i { 
+    font-size: 2.5rem; 
+    margin-bottom: 1rem; 
+    color: #fff; 
+}
+
+.service-card h3 { 
+    margin-bottom: 0.5rem; 
+}
+
+.service-card .price { 
+    font-weight: 600; 
+    color: #888; 
+    margin-top: 1rem; 
+}
+
+.product-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 2rem; 
+}
+
+.product-card { 
+    background: #1a1a1a; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    border: 1px solid #2a2a2a; 
+}
+
+.product-slider { 
+    position: relative; 
+    height: 350px; 
+    background-color: #222; 
+    width: 100%; 
+    overflow: hidden; 
+}
+
+.product-slider img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: none; 
+}
+
+.product-slider img.active { 
+    display: block; 
+}
+
+.slider-btn { 
+    position: absolute; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    background: rgba(0,0,0,0.6); 
+    color: #fff; 
+    border: none; 
+    padding: 0.5rem 0.8rem; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    font-size: 1rem; 
+}
+
+.slider-btn.prev { 
+    left: 10px; 
+}
+
+.slider-btn.next { 
+    right: 10px; 
+}
+
+.slider-btn:hover { 
+    background: rgba(0,0,0,0.9); 
+}
+
+.product-info { 
+    padding: 1.5rem; 
+}
+
+.product-info h3 { 
+    font-size: 1.1rem; 
+    margin-bottom: 0.3rem; 
+}
+
+.product-info .price { 
+    font-weight: 600; 
+    margin-bottom: 1rem; 
+    color: #aaa; 
+}
+
+.btn-buy { 
+    display: block; 
+    width: 100%; 
+    text-align: center; 
+    background: #25D366; 
+    color: #fff; 
+    padding: 0.7rem; 
+    border-radius: 4px; 
+    font-weight: 600; 
+    transition: background 0.3s; 
+}
+
+.btn-buy:hover { 
+    background: #1eb954; 
+}
+
+footer { 
+    background: #0a0a0a; 
+    border-top: 1px solid #222; 
+    padding: 3rem 2rem 1.5rem; 
+    text-align: center; 
+}
+
+.social-links { 
+    display: flex; 
+    justify-content: center; 
+    gap: 1.5rem; 
+    margin-bottom: 1.5rem; 
+}
+
+.social-links a { 
+    font-size: 1.5rem; 
+    color: #888; 
+    transition: color 0.3s; 
+}
+
+.social-links a:hover { 
+    color: #fff; 
+}
+
+.footer-info {
+    margin-bottom: 1rem; 
+    color: #aaa;
+}
+
+.copyright { 
+    font-size: 0.8rem; 
+    color: #555; 
+}
+
+@media (max-width: 768px) { 
+    .hero-content h1 { 
+        font-size: 2rem; 
+    } 
+    .nav-links { 
+        display: none; 
+    } 
+}

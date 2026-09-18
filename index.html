@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETERNO — Shoes Care & Apparel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- CDN Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">ETERNO<span>.</span></a>
+            <ul class="nav-links">
+                <li><a href="#shoes-care">Shoes Care</a></li>
+                <li><a href="#apparel">Katalog Pakaian</a></li>
+                <li><a href="#contact">Kontak</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>ETERNO CARE & APPAREL</h1>
+            <p>Perawatan sepatu profesional & koleksi pakaian pilihan dari ETERNO.</p>
+        </div>
+    </section>
+
+    <section id="shoes-care">
+        <div class="section-title">
+            <h2>Shoes Care Services</h2>
+            <p>Layanan perawatan profesional untuk sepatu kesayangan Anda</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fa-solid fa-pump-soap"></i>
+                <h3>Fast Cleaning</h3>
+                <p>Pembersihan cepat pada upper & midsole.</p>
+                <div class="price">Mulai Rp 30.000</div>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-soap"></i>
+                <h3>Deep Cleaning</h3>
+                <p>Pembersihan menyeluruh seluruh bagian sepatu.</p>
+                <div class="price">Mulai Rp 50.000</div>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <h3>Unyellowing</h3>
+                <p>Mengembalikan warna kuning pada midsole kembali cerah.</p>
+                <div class="price">Mulai Rp 40.000</div>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-paintbrush"></i>
+                <h3>Repaint / Recolor</h3>
+                <p>Pengecatan ulang warna pudar atau ganti warna.</p>
+                <div class="price">Mulai Rp 100.000</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="apparel">
+        <div class="section-title">
+            <h2>Katalog Pakaian</h2>
+            <p>Koleksi Kaos, Celana & Outerwear Pilihan</p>
+        </div>
+
+        <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <footer id="contact">
+        <div class="social-links">
+            <a href="https://www.instagram.com/eterno_etrn/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/628XXXXXXXXXX" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+        <p style="margin-bottom: 1rem; color: #aaa;">Drop Off & Booking Online via Instagram / WhatsApp</p>
+        <div class="copyright">&copy; 2026 ETERNO. All Rights Reserved.</div>
+    </footer>
+
+    <script>
+        // Masukkan URL dan anon Key Supabase milik Anda
+        const SUPABASE_URL = "https://zcjdgppodjtlwjnyrqdi.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjamRncHBvZGp0bHdqbnlycWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MTU4MTksImV4cCI6MjEwNTE5MTgxOX0.OdfgOI1kpCPSeIIydomfp0vb5MzkDhvyH2Pw9Z6YzeQ";
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadProducts() {
+            const container = document.getElementById('productGrid');
+            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#aaa; padding:2rem;">Memuat produk dari Supabase...</p>';
+
+            try {
+                // Mengambil produk beserta relasi foto dari Supabase
+                const { data: products, error } = await db
+                    .from('products')
+                    .select('*, product_images(image_url)')
+                    .order('id', { ascending: false });
+
+                if (error) throw error;
+
+                container.innerHTML = '';
+
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#777; padding:2rem;">Belum ada produk di database.</p>';
+                    return;
+                }
+
+                products.forEach((prod, pIdx) => {
+                    const imgList = prod.product_images && prod.product_images.length > 0
+                        ? prod.product_images.map(img => img.image_url)
+                        : ['https://via.placeholder.com/600'];
+
+                    let imgsHtml = '';
+                    imgList.forEach((imgSrc, iIdx) => {
+                        imgsHtml += `<img src="${imgSrc}" class="img-slide-${pIdx} ${iIdx === 0 ? 'active' : ''}" alt="${prod.title}">`;
+                    });
+
+                    const hasMultiple = imgList.length > 1;
+                    const navBtnsHtml = hasMultiple ? `
+                        <button class="slider-btn prev" onclick="changeSlide(${pIdx}, -1)">&lt;</button>
+                        <button class="slider-btn next" onclick="changeSlide(${pIdx}, 1)">&gt;</button>
+                    ` : '';
+
+                    container.innerHTML += `
+                        <div class="product-card">
+                            <div class="product-slider" id="slider-${pIdx}">
+                                ${imgsHtml}
+                                ${navBtnsHtml}
+                            </div>
+                            <div class="product-info">
+                                <h3>${prod.title}</h3>
+                                <div class="price">${prod.price}</div>
+                                <a href="https://wa.me/628XXXXXXXXXX?text=Halo%20Eterno,%20saya%20mau%20order%20${encodeURIComponent(prod.title)}" target="_blank" class="btn-buy">
+                                    <i class="fa-brands fa-whatsapp"></i> Order via WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error:", error);
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#ff5555; padding:2rem;">Gagal memuat katalog produk dari database.</p>';
+            }
+        }
+
+        function changeSlide(prodIdx, direction) {
+            const slides = document.querySelectorAll(`.img-slide-${prodIdx}`);
+            let activeIdx = 0;
+
+            slides.forEach((slide, i) => {
+                if (slide.classList.contains('active')) {
+                    activeIdx = i;
+                    slide.classList.remove('active');
+                }
+            });
+
+            let newIdx = activeIdx + direction;
+            if (newIdx >= slides.length) newIdx = 0;
+            if (newIdx < 0) newIdx = slides.length - 1;
+
+            slides[newIdx].classList.add('active');
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>
