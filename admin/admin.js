@@ -1,12 +1,11 @@
 // ==========================================
-// 1. DEKLARASI VARIABEL UTAMA & KONFIGURASI
+// 1. DEKLARASI KONFIGURASI
 // ==========================================
 const SUPABASE_URL = "https://zcjdgppodjtlwjnyrqdi.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjamRncHBvZGp0bHdqbnlycWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MTU4MTksImV4cCI6MjEwNTE5MTgxOX0.OdfgOI1kpCPSeIIydomfp0vb5MzkDhvyH2Pw9Z6YzeQ";
 
-// Deklarasi diawali di paling atas agar tidak error initialization
-let products = [];
 let db = null;
+let products = [];
 
 // ==========================================
 // 2. AUTHENTICATION CHECK
@@ -24,20 +23,19 @@ if (!isLoggedIn) {
     }
 }
 
-// Inisialisasi Supabase aman
+// Inisialisasi Supabase secara aman saat SDK siap
 function initSupabase() {
-    if (typeof supabase !== 'undefined') {
+    if (typeof window.supabase !== 'undefined') {
         if (!db) {
-            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
         return true;
     } else {
-        console.error("Supabase SDK belum siap!");
+        console.error("Supabase SDK belum dimuat oleh browser.");
         return false;
     }
 }
 
-// Helper sinkronisasi input form ke array products
 function syncCurrentInputs() {
     if (!Array.isArray(products)) return;
     products.forEach((prod, pIdx) => {
@@ -49,14 +47,14 @@ function syncCurrentInputs() {
 }
 
 // ==========================================
-// 3. FETCH DATA DARI SUPABASE (GET)
+// 3. FETCH DATA DARI SUPABASE
 // ==========================================
 async function fetchProducts() {
     const container = document.getElementById('adminList');
     if (!container) return;
-    
+
     if (!initSupabase()) {
-        container.innerHTML = '<p style="text-align:center; color:#ff5555; padding:2rem;">Gagal memuat Supabase SDK. Silakan refresh halaman.</p>';
+        container.innerHTML = '<p style="text-align:center; color:#ff5555; padding:2rem;">Gagal memuat Supabase SDK. Coba refresh halaman.</p>';
         return;
     }
 
@@ -134,7 +132,7 @@ function renderAdminList() {
 }
 
 // ==========================================
-// 5. TAMBAH PRODUK BARU (POST)
+// 5. TAMBAH PRODUK BARU
 // ==========================================
 async function addNewProduct() {
     if (!initSupabase()) return;
@@ -166,7 +164,7 @@ async function addNewProduct() {
 }
 
 // ==========================================
-// 6. SIMPAN PERUBAHAN DETAIL (UPDATE)
+// 6. SIMPAN PERUBAHAN DETAIL
 // ==========================================
 async function saveChanges() {
     if (!initSupabase()) return;
@@ -214,11 +212,11 @@ async function saveChanges() {
 }
 
 // ==========================================
-// 7. HAPUS PRODUK DARI DATABASE (DELETE)
+// 7. HAPUS PRODUK
 // ==========================================
 async function deleteProductFromDB(productId, title) {
     if (!initSupabase()) return;
-    
+
     if (confirm(`Yakin ingin menghapus produk "${title}"?`)) {
         try {
             const { error } = await db.from('products').delete().eq('id', productId);
@@ -233,9 +231,6 @@ async function deleteProductFromDB(productId, title) {
     }
 }
 
-// ==========================================
-// 8. HELPER FOTO & LOGOUT
-// ==========================================
 function deleteImageLocal(pIdx, iIdx) {
     syncCurrentInputs();
     products[pIdx].images.splice(iIdx, 1);
