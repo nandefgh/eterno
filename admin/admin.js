@@ -17,12 +17,21 @@ if (!isLoggedIn) {
 // ==========================================
 // 2. SUPABASE INITIALIZATION
 // ==========================================
-// Ganti dengan kredensial dari Dashboard Supabase (Project Settings -> API)
 const SUPABASE_URL = "https://zcjdgppodjtlwjnyrqdi.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjamRncHBvZGp0bHdqbnlycWRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2MTU4MTksImV4cCI6MjEwNTE5MTgxOX0.OdfgOI1kpCPSeIIydomfp0vb5MzkDhvyH2Pw9Z6YzeQ";
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let db = null;
 let products = [];
+
+function initSupabase() {
+    if (typeof supabase !== 'undefined') {
+        db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        return true;
+    } else {
+        console.error("Supabase SDK belum terload!");
+        return false;
+    }
+}
 
 // ==========================================
 // 3. FETCH DATA DARI SUPABASE (GET)
@@ -31,6 +40,11 @@ async function fetchProducts() {
     const container = document.getElementById('adminList');
     if (!container) return;
     
+    if (!db && !initSupabase()) {
+        container.innerHTML = '<p style="text-align:center; color:#ff5555; padding:2rem;">Gagal memuat Supabase SDK. Periksa koneksi internet / CDN di HTML.</p>';
+        return;
+    }
+
     container.innerHTML = '<p style="text-align:center; color:#aaa; padding:2rem;">Memuat data dari Supabase...</p>';
 
     try {
@@ -41,7 +55,6 @@ async function fetchProducts() {
 
         if (error) throw error;
 
-        // Map data agar sesuai dengan struktur array frontend
         products = data.map(item => ({
             id: item.id,
             title: item.title,
@@ -118,6 +131,7 @@ function syncCurrentInputs() {
 // 5. TAMBAH PRODUK BARU (POST)
 // ==========================================
 async function addNewProduct() {
+    if (!db && !initSupabase()) return;
     syncCurrentInputs();
 
     try {
@@ -132,7 +146,6 @@ async function addNewProduct() {
 
         if (prodErr) throw prodErr;
 
-        // Tambahkan foto default pertama
         await db.from('product_images').insert([{
             product_id: newProd.id,
             image_url: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600"
@@ -150,6 +163,7 @@ async function addNewProduct() {
 // 6. SIMPAN PERUBAHAN DETAIL (UPDATE)
 // ==========================================
 async function saveChanges() {
+    if (!db && !initSupabase()) return;
     syncCurrentInputs();
 
     if (products.length === 0) {
@@ -161,7 +175,6 @@ async function saveChanges() {
         for (let pIdx = 0; pIdx < products.length; pIdx++) {
             const prod = products[pIdx];
 
-            // Update judul dan harga di tabel products
             const { error: updateErr } = await db
                 .from('products')
                 .update({ title: prod.title, price: prod.price })
@@ -169,14 +182,12 @@ async function saveChanges() {
 
             if (updateErr) throw updateErr;
 
-            // Masukkan URL tambahan jika ada
             const extraUrlsEl = document.getElementById(`add-url-${pIdx}`);
             if (extraUrlsEl && extraUrlsEl.value.trim() !== '') {
                 const urlArray = extraUrlsEl.value.split(',').map(u => u.trim()).filter(u => u !== '');
                 prod.images.push(...urlArray);
             }
 
-            // Hapus daftar foto lama di database lalu masukkan daftar foto yang baru
             await db.from('product_images').delete().eq('product_id', prod.id);
 
             if (prod.images.length > 0) {
@@ -200,6 +211,8 @@ async function saveChanges() {
 // 7. HAPUS PRODUK DARI DATABASE (DELETE)
 // ==========================================
 async function deleteProductFromDB(productId, title) {
+    if (!db && !initSupabase()) return;
+    
     if (confirm(`Yakin ingin menghapus produk "${title}"?`)) {
         try {
             const { error } = await db.from('products').delete().eq('id', productId);
@@ -252,4 +265,7 @@ function logout() {
     window.location.href = '../index.html';
 }
 
-window.onload = fetchProducts;
+window.onload = function() {
+    initSupabase();
+    fetchProducts();
+};
